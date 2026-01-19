@@ -1,5 +1,5 @@
 
-<---------- 22-01-2026 ------------->
+<---------- 14-01-2026 ------------->
 
 1. React Batching
 
@@ -121,7 +121,7 @@ note:
     1000); 
     } output: 0 1 2 3 4
 
-7. Program 
+7. Program IIFE
 
     (() => {
         var fn;
@@ -208,3 +208,143 @@ Output: 2
     5. Color and Contras
     6. WAI-ARIA
     7. Multimedia Alternatives
+
+<---------- 17-01-2026 ------------->
+
+Nodejs
+
+1. What is controller?
+    -> Controllers are function or classes responsible for handling incoming client request,
+       processing them, and sending back the appropriate responses.
+    -> its like a middleware
+    -> They act as an intermediary layer in the Model-View-Controller (MVC) or a similar architectural pattern.
+
+
+2. what is Cluster?
+    -> The Node.js cluster module is a built-in feature that allows you to leverage multi-core system resources by creating multiple, simultaneous Node.js processes (workers) that share the same server port
+
+3. What is Transactions?
+
+    -> Transaction in MongoDB allows you to execute a sequence of operation as a single, atomic unit.
+    -> the operation execution should be completely done or the entire operation will be rollback
+    -> Enabling multiple operations to be executed in a single logical unit.
+    -> can be used for financial operations
+    -> To use transactions in MongoDB, you must be running a replica set or a sharded cluster with MongoDB 4.0 or later.
+    -> can be done with single collection and multiple collection transactions.
+
+    Key Concepts (ACID)
+
+    1. Atomicity: Ensures that all operations within a transaction are completed successfully. If any operation fails, all changes are undone.
+    2. Consistency: Guarantees that the database remains in a valid state before and after the transaction.
+    3. Isolation: Ensures that transactions are securely and independently processed without interference.
+    4. Durability: Once a transaction is committed, changes are permanent, even if the system crashes.
+
+4. Create a form to add food name and price to show in list and pass in context api
+
+Creating Context
+
+    import { createContext, useContext, useState } from "react";
+
+    const FoodContext = createContext(null);
+
+    export const FoodProvider = ({ children }) => {
+    const [foods, setFoods] = useState([]);
+
+    const addFood = (food) => {
+        setFoods((prev) => [...prev, food]);
+    };
+
+    return (
+        <FoodContext.Provider value={{ foods, addFood }}>
+        {children}
+        </FoodContext.Provider>
+    );
+    };
+
+    export const useFood = () => useContext(FoodContext);
+
+Creating Form to add
+
+    import { useState } from "react";
+    import { useFood } from "./FoodContext";
+
+    function FoodForm() {
+    const { addFood } = useFood();
+
+    const [foodName, setFoodName] = useState("");
+    const [price, setPrice] = useState("");
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!foodName.trim() || !price) return;
+
+        addFood({
+        id: Date.now(),
+        name: foodName,
+        price: price,
+        });
+
+        setFoodName("");
+        setPrice("");
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+        <input
+            type="text"
+            placeholder="Food Name"
+            value={foodName}
+            onChange={(e) => setFoodName(e.target.value)}
+        />
+
+        <input
+            type="number"
+            placeholder="Price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+        />
+
+        <button type="submit">Add Food</button>
+        </form>
+    );
+    }
+
+    export default FoodForm;
+
+Fetching Food Data
+
+    import { useFood } from "./FoodContext";
+
+    function FoodTable() {
+    const { foods } = useFood();
+
+    return (
+        <table border="1" cellPadding="8">
+        <thead>
+            <tr>
+            <th>Food Name</th>
+            <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foods.length === 0 ? (
+            <tr>
+                <td colSpan="2" align="center">No food added</td>
+            </tr>
+            ) : (
+            foods.map((food) => (
+                <tr key={food.id}>
+                <td>{food.name}</td>
+                <td>₹{food.price}</td>
+                </tr>
+            ))
+            )}
+        </tbody>
+        </table>
+    );
+    }
+
+    export default FoodTable;
+
+
