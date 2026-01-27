@@ -28,6 +28,8 @@ Javascript
 6. Hoisting
 7. Object.freeze and Object.seal
 
+    The key difference is that Object.freeze() makes an object completely immutable (read-only), preventing any changes to properties or values, while Object.seal() allows existing properties to be modified, but prevents new properties from being added or existing ones from being deleted
+
 Nodejs
 
 1. How To handle 1Million request from different endpoint with same user
